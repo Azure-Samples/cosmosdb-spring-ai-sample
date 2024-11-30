@@ -1,57 +1,57 @@
-# Project Name
+# AI Chat with RAG using Spring AI and Azure Cosmos DB
 
-(short, 1-3 sentenced, description of the project)
+This sample shows how to build a chat assistant with Spring AI using Azure Cosmos DB as a vector store for retrieval augmented generation (RAG), allowing you to use your private data to answer questions.
 
-## Features
+![Demo](./media/demo.gif)
 
-This project framework provides the following features:
+### Application Architecture
 
-* Feature 1
-* Feature 2
-* ...
+This application utilizes the following Azure resources:
+
+- [**Spring AI Framework**](https://docs.spring.io/spring-ai/reference/1.0/index.html) to orchestrate and simplify vector embeddings, vector search, and chat completion.
+- [**Azure OpenAI**](https://docs.microsoft.com/azure/cognitive-services/openai/) for chat completion and embedding APIs.
+- [**Azure Cosmos DB NoSQL API**](https://learn.microsoft.com/azure/cosmos-db/nosql/vector-search) as the vector store database.
+
 
 ## Getting Started
 
 ### Prerequisites
 
-(ideally very short, if any)
+The following prerequisites are required to use this application. Please ensure that you have them all installed locally.
 
-- OS
-- Library version
-- ...
-
-### Installation
-
-(ideally very short)
-
-- npm install [package name]
-- mvn install
-- ...
+- [Git](http://git-scm.com/).
+- [Java 17 or later](https://learn.microsoft.com/java/openjdk/install)
+- [Azure Cosmos DB NoSQL API account](https://learn.microsoft.com/azure/cosmos-db/nosql/how-to-create-account)
+- An Azure OpenAI account (see more [here](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR7en2Ais5pxKtso_Pz4b1_xUOFA5Qk1UWDRBMjg0WFhPMkIzTzhKQ1dWNyQlQCN0PWcu))
 
 ### Quickstart
-(Add steps to get up and running quickly)
 
-1. git clone [repository clone url]
-2. cd [repository name]
-3. ...
+1. Git clone this repo.
+2. You need to create the following `system environment variables` with the appropriate values. 
 
+   ```shell
+   set AZURE_OPENAI_ENDPOINT=<Your Azure OpenAI endpoint>
+   set AZURE_OPENAI_APIKEY=<Your Azure OpenAI API key>
+   set COSMOSDB_AI_ENDPOINT=<Cosmos DB NoSQL Account URI>
+   set COSMOSDB_AI_KEY=<Cosmos DB NoSQL Account Key>
+   ```
+3. Check `src/main/resources/application.properties` for other Azure OpenAI default values that are set, and ensure you have the right values for chat completion and embedding (see [here](https://docs.spring.io/spring-ai/reference/1.0/api/chat/azure-openai-chat.html) for more information on default values used by Azure OpenAI in Spring AI framework).
 
-## Demo
+4. Build the application (this will create two "fat" shaded jars, `webapi-application.jar` for the AI Chat bot, and `cli-application.jar` for loading your private data):
 
-A demo app is included to show how to use the project.
+   ```shell
+   mvn clean package
+   ```  
 
-To run the demo, follow these steps:
+4. The following command will read and process your own private text documents, create an Azure Cosmos DB NoSQL API collection with [vector indexing](https://learn.microsoft.com/azure/cosmos-db/nosql/vector-search#vector-indexing-policies) and [embeddings](https://learn.microsoft.com/azure/cosmos-db/nosql/vector-search#container-vector-policies) policies, and load the processed documents into it:
 
-(Add steps to start up the demo)
+   ```shell
+   java -jar target/cli-application.jar --from=C:/<path you your private text docs>
+   ```
 
-1.
-2.
-3.
+5. Run the following command to build and run the application:
 
-## Resources
-
-(Any additional resources or related projects)
-
-- Link to supporting information
-- Link to similar sample
-- ...
+   ```shell
+   java -jar target/webapi-application.jar
+   ```
+6. Open your browser and navigate to `http://localhost:8080/`. You should see the Chat Bot above. Test it out by typing in a question and clicking `Send`.
